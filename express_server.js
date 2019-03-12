@@ -1,6 +1,6 @@
 var express = require("express");
 var app = express();
-var PORT = 3001;
+var PORT = 8080;
 
 const generateRandomString = () => Math.random().toString(36).substr(2,8);
 
@@ -44,6 +44,10 @@ app.get("/urls/:shortURL", (req, res) => {
     let templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL]};
     res.render("urls_show", templateVars);
 });
+app.get("/u/:shortURL", (req, res) => {
+    const longURL = urlDatabase[req.params.shortURL];
+    res.redirect(longURL);
+  });
 
 app.post("/urls", (req, res) => {
     let shortUrlKey = generateRandomString();
@@ -51,6 +55,7 @@ app.post("/urls", (req, res) => {
     urlDatabase[shortUrlKey] = longURL; 
     res.redirect(`/urls/:${shortUrlKey}`);      
 }); 
+
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
