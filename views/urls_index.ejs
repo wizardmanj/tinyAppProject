@@ -10,11 +10,13 @@
 </head>
 <body style="font-size:20px; padding:50px;">
     <!-- Add EJS code here -->
+    <a href="#"> #</a>
     <ul>
         <% for (var url in urls) { %>
-            <li><%= url %></li>
-        <% }; %>
-    </ul>
+            <li><%= url %>: <%= urls[url] %></li>
+            <% }; %>
+        </ul>
+
 
 </body>
 </html>
