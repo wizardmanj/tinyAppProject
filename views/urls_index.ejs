@@ -1,32 +1,36 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+ <meta charset="utf-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
-  <title>TinyApp</title>
+ <!-- Bootstrap CSS -->
+ <link rel="stylesheet" href="styles.css" type="text/css">
+ <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+ <title>TinyApp</title>
 </head>
 <body style="font-size:20px; padding:50px;">
- 
-    <header>
-            <% include ./partials/_header %>
-    </header>
-    
-    <a href="/urls/new">Create New TinyURL</a>
-    
-    <h2>My URLs</h2>
-    <ul>
-        <% for (var url in urls) { %>
-            <li><%= url %>: <%= urls[url] %>
-            <form method="POST" action="<%=`/urls/${url}/delete`%>"> 
-                <input type="submit" value= "Delete"></form>
-            <form method="GET" action="<%=`/urls/${url}/`%>"> 
-                <input type="submit" value= "Edit">
-            </form> 
-            </li>
-            <% }; %>
-    </ul>
+
+   <h1>
+     <% include ./partials/_header %>
+   </h1>
+   <ul>
+   <% for (let url in urls) { %>
+       <li style="display: flex;"><%= url %> - <a href= <%=  urls[url]  %>> <%= urls[url] %> </a>
+         <form method="POST" action="/urls/<%= url %>/delete">
+           <div class="form-group mb-2">
+             <button type="submit" class="btn btn-primary">Delete</button>
+         </form>
+         </div>
+         <form method="GET" action="/urls/<%= url %>">
+           <div class="form-group mb-2">
+             <button type="submit" class="btn btn-primary">edit</button>
+           </div>
+         </form>
+       </li>
+   <% }; %>
+   </ul>
+
 
 </body>
 </html>
