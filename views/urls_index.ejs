@@ -18,9 +18,16 @@
     <h2>My URLs</h2>
     <ul>
         <% for (var url in urls) { %>
-            <li><%= url %>: <%= urls[url] %></li>
+            <li><%= url %>: <%= urls[url] %>
+            <form method="POST" action="<%=`/urls/${url}/delete`%>"> 
+                <input type="submit" value= "Delete"></form></li>
             <% }; %>
-        </ul>
+    </ul>
 
+    <!-- <form action="http://example.org/user" method="delete" if-match="*">
+        <input name="hat-size" type="text" value="" />
+        <input type="submit" />
+      </form>	 -->
+    
 </body>
 </html>
