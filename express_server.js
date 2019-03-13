@@ -19,20 +19,7 @@ const urlDatabase = {
     "9sm5xK": "http://www.google.com"
 };
 
-
-//get handlers
-app.get("/", (req, res) => {
-  res.send("Hello!");
-});
-
-app.get("/hello", (req, res) => {
-    res.send("<html><body>Hello <b>World</b></body></html>\n");
-});
-
-app.get("/urls.json", (req, res) => {
-    res.json(urlDatabase);
-});
-
+//get handlers 
 app.get("/urls", (req, res) => {
     let templateVars = { urls: urlDatabase };
     res.render("urls_index", templateVars);
@@ -42,30 +29,45 @@ app.get("/urls/new", (req, res) => {
     res.render("urls_new");
 });
 
-app.get("/urls/:shortURL", (req, res) => {
+app.get("/urls/:shortURL/", (req, res) => {
     let templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL]};
     res.render("urls_show", templateVars);
 });
+
 app.get("/u/:shortURL", (req, res) => {
     const longURL = urlDatabase[req.params.shortURL];
     res.redirect(longURL);
-  });
+});
 
 //post handler with redirects
 app.post("/urls", (req, res) => {
     let shortUrlKey = generateRandomString();
     let longURL = req.body.longURL; 
     urlDatabase[shortUrlKey] = longURL; 
-    res.redirect(`/urls/:${shortUrlKey}`);      
+    res.redirect(`/urls/${shortUrlKey}`);      
 }); 
-
-app.post("/urls/:shortURL/delete", (req, res) => {
-    delete urlDatabase[req.params.shortURL]; 
+    
+//Update (using post in place of put) to update a longURL
+app.post("/urls/:shortURL/", (req, res) => {
+    var formContent = req.body.longURL;
+    urlDatabase[req.params.shortURL] = formContent; 
     res.redirect('/urls');
 }); 
+    
+//update a long URL using put
+// app.put("/urls/:shortURL/", (req, res) => {
+    //     var formContent= req.body.longURL;
+    //     urlDatabase[req.params.shortURL] = formContent; 
+    //     res.redirect('/urls');
+// });
+        
+//This deletes a URL (short and long)
+app.post("/urls/:shortURL/delete", (req, res) => {
+    delete urlDatabase[req.params.shortURL];
+    res.redirect("/urls/");
+});
 
-
-
+//app is listening
 app.listen(PORT, () => {
-  console.log(`Example app listening on port ${PORT}!`);
+    console.log(`Example app listening on port ${PORT}!`);
 });
