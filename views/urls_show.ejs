@@ -1,16 +1,16 @@
 <% include ./partials/_header %>
 
-    <a href="/urls/new">Create New TinyURL</a>
+    <a href='/urls/new'>Create New TinyURL</a>
     
     <h2>My URLs</h2>
     <ul>
         <li><%= shortURL %> - <%= longURL %></li>
     </ul>
-    <form class="form-inline" action="/urls/<%= shortURL %>" method="POST">
-        <div class="form-group mb-2">
-          <label for="shortURL">Edit URL:</label>
-          <input class="form-control" type="text" name="longURL" value="<%= longURL %>" style="width: 300px; margin: 1em">
-          <button type="submit" class="btn btn-primary">Submit</button>
+    <form class='form-inline' action='/urls/<%= shortURL %>' method='POST'>
+        <div class='form-group mb-2'>
+          <label for='shortURL'>Edit URL:</label>
+          <input class='form-control' type='text' name='longURL' value='<%= longURL %>' style='width: 300px; margin: 1em'>
+          <button type='submit' class='btn btn-primary'>Submit</button>
         </div>
       </form>
   </body>
