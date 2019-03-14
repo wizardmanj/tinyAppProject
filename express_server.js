@@ -26,23 +26,36 @@ const urlDatabase = {
 
 //user database
 const userDatabase = {
-
+    "userRandomID": {
+        id: "userRandomID", 
+        email: "user@example.com", 
+        password: "purple-monkey-dinosaur"
+      },
+     "user2RandomID": {
+        id: "user2RandomID", 
+        email: "user2@example.com", 
+        password: "dishwasher-funk"
+      }
 };
-
+//Creates a new user
 createUser = (email, password) => {
-    
     const userId = generateRandomString();
-    
     const newUser = {
         id: userId,
         email,
         password
     };
-
     userDatabase[userId] = newUser;
-
     return userId;
 };
+//Handles registration error conditions
+emailCheck = (email) => {
+    for (let user in userDatabase)
+    if (userDatabase[email] === email) {
+        return false;
+    }
+};
+
 
 //**UNNNECESSARY(Practice); Example of sequential userId generator function
 // createUser = (email, password) {
@@ -101,11 +114,15 @@ app.post('/register', (req, res) => {
     const {email, password } = req.body;
     const userId = createUser(email, password);
     
+   if(email === '' || password === '') {
+    res.status(400).send("Please enter valid information")
+   } else if (emailCheck) {
+    res.status(400).send("Email already exists. Try logging in!")
+   } else{
     res.cookie('user_id', userId);
     // req.session.user_id = userId;
-    console.log(userDatabase);
     res.redirect('/urls');
-});
+}});
 
 
 
