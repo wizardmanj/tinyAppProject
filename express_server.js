@@ -59,24 +59,7 @@ const findUserByEmail = email => {
     return false;
 };
 
-
-//**UNNNECESSARY(Practice); Example of sequential userId generator function
-// createUser = (email, password) {
-    
-//     const userId = Object.keys(userDatabase).length++;
-    
-//     const newUser = {
-//     id: userId,
-//     email,
-//     password
-//     };
-
-//     userDatabase[userId] = newUser;
-
-//     return userId;
-// };
-
-//get handlers 
+//This renders index page
 app.get('/urls', (req, res) => {
     const userId = req.cookies['user_id'];
     let templateVars = { 
@@ -92,7 +75,11 @@ app.get('/urls/new', (req, res) => {
     let templateVars = {
         user: userDatabase[userId]
     };
+    if (!userId) {
+        res.redirect('/login');
+    } else {
     res.render('urls_new', templateVars);
+    };
 });
 
 //This renders the show page
