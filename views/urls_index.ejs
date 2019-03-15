@@ -1,16 +1,16 @@
-   <h1><% include ./partials/_header %></h1>
+   <% include ./partials/_header %>
 
    <h2><a href='urls/new/'>Add New Tiny URL</a></h2>
    <ul>
    <% for (let url in urls) { %>
-       <li style="display: flex;"><%= url %> - <a href= <%=  urls[url]  %>> <%= urls[url] %> </a>
+       <li class="flex"><%= url %> - <a href= <%=  urls[url]  %>> <%= urls[url] %> </a>
          <form method="POST" action="/urls/<%= url %>/delete">
-           <div class="form-group mb-2">
+           <div class="form-group mx-5">
              <button type="submit" class="btn btn-primary">Delete</button>
          </form>
          </div>
          <form method="GET" action="/urls/<%= url %>">
-           <div class="form-group mb-2">
+           <div class="form-group mx-5">
              <button type="submit" class="btn btn-primary">edit</button>
            </div>
          </form>

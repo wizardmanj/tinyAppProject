@@ -11,6 +11,7 @@ const PORT = process.env.port || 8080;
 // then kill (pid #; provided from above)
 
 app.use(bodyParser.urlencoded({extended: true}));
+app.use(express.static(__dirname + '/public'));
 app.set('view engine', 'ejs');
 app.use(cookieParser())
 
@@ -152,12 +153,12 @@ app.post('/login', (req, res) => {
     if(!email || !password) {
         res.status(400).send("Please enter valid information")
     } else if (!user) {
-        res.status(400).send('User not found!');
+        res.status(403).send('User not found!');
     } else if (user.password === password) {
         res.cookie('user_id', user.id);
         res.redirect('/urls');      
     } else {
-        res.status(400).send("Gimme the right password.")
+        res.status(403).send("Gimme the right password.")
     }
 });
 
@@ -186,8 +187,8 @@ app.post('/urls/:shortURL/delete', (req, res) => {
 
 //This logs out the user
 app.post('/logout', (req, res) => {
-    let username = req.body.username;
-    res.clearCookie('user_id');
+    let cookieOutput = req.body.user_id;
+    res.clearCookie('user_id', cookieOutput);
     res.redirect('/urls');
 })
 //This shows me that my app is listening
