@@ -38,7 +38,7 @@ const userDatabase = {
       }
 };
 //Creates a new user
-createUser = (email, password) => {
+const createUser = (email, password) => {
     const userId = generateRandomString();
     const newUser = {
         id: userId,
@@ -49,10 +49,13 @@ createUser = (email, password) => {
     return userId;
 };
 //Handles registration error conditions
-emailCheck = email => {
-    for (let user in userDatabase)
-    if (userDatabase[user]['email'] === email) {
-        return true};
+const findUserByEmail = email => {
+    for (let userId in userDatabase) {
+        if (userDatabase[userId].email === email) {
+            return userDatabase[userId];
+        }
+    }
+    return false;
 };
 
 
@@ -71,7 +74,6 @@ emailCheck = email => {
 
 //     return userId;
 // };
-
 
 //get handlers 
 app.get('/urls', (req, res) => {
@@ -124,7 +126,7 @@ app.post('/register', (req, res) => {
     
     if(email === '' || password === '') {
         res.status(400).send("Please enter valid information")
-    } else if (emailCheck(email)) {
+    } else if (findUserByEmail(email)) {
         res.status(400).send("Email already exists. Try logging in!")
     } else{
         const userId = createUser(email, password);
@@ -134,7 +136,30 @@ app.post('/register', (req, res) => {
     res.redirect('/urls');
 });
 
+//This displays the login form; login.ejs
+app.get('/login', (req, res) => {
+    const userId = req.cookies['user_id'];
+    let templateVars = {
+        user: userDatabase[userId]
+    };
+    res.render('login', templateVars);
+});
 
+//This checks in to see if user exits in user database
+app.post('/login', (req, res) => {
+    const {email, password } = req.body;
+    const user = findUserByEmail(email);
+    if(!email || !password) {
+        res.status(400).send("Please enter valid information")
+    } else if (!user) {
+        res.status(400).send('User not found!');
+    } else if (user.password === password) {
+        res.cookie('user_id', user.id);
+        res.redirect('/urls');      
+    } else {
+        res.status(400).send("Gimme the right password.")
+    }
+});
 
 //This generates short URL for an entered longURL and redirects to the urls/ page
 app.post('/urls', (req, res) => {
@@ -152,13 +177,6 @@ app.post('/urls/:shortURL', (req, res) => {
     res.redirect('/urls');
 }); 
 
-//This logs my user in
-app.post('/login', (req, res) => {
-    let username = req.body.username;
-    res.cookie('username', username);
-    res.redirect('/urls');
-})
-
 
 //This deletes a URL (short and long)
 app.post('/urls/:shortURL/delete', (req, res) => {
@@ -169,7 +187,7 @@ app.post('/urls/:shortURL/delete', (req, res) => {
 //This logs out the user
 app.post('/logout', (req, res) => {
     let username = req.body.username;
-    res.clearCookie('username');
+    res.clearCookie('user_id');
     res.redirect('/urls');
 })
 //This shows me that my app is listening
