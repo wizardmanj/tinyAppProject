@@ -21,9 +21,14 @@ const generateRandomString = () => Math.random().toString(36).substr(2,8);
 
 //url database
 const urlDatabase = {
-    'b2xVn2': 'http://www.lighthouselabs.ca',
-    '9sm5xK': 'http://www.google.com',
+    'b2xVn2': {longURL: 'http://www.lighthouselabs.ca', userId: 'g7vaj3l0'},
+    '9sm5xK': {longURL: 'http://www.google.com', userId: 'g7vaj3l0'} 
 };
+
+// const urlDatabase = {
+//     b6UTxQ: { longURL: "https://www.tsn.ca", userID: "aJ48lW" },
+//     i3BoGr: { longURL: "https://www.google.ca", userID: "aJ48lW" }
+//   };
 
 //user database
 const userDatabase = {
@@ -58,6 +63,9 @@ const findUserByEmail = email => {
     }
     return false;
 };
+
+//
+const urlsForUser = id => {};
 
 //This renders index page
 app.get('/urls', (req, res) => {
@@ -151,10 +159,15 @@ app.post('/login', (req, res) => {
 
 //This generates short URL for an entered longURL and redirects to the urls/ page
 app.post('/urls', (req, res) => {
-    let shortUrlKey = generateRandomString();
+    const userId = req.cookies.user_id;
     let longURL = req.body.longURL; 
-    urlDatabase[shortUrlKey] = longURL; 
-    res.redirect(`/urls/${shortUrlKey}`);      
+    let shortUrl = generateRandomString();
+    if (userId) { 
+    urlDatabase[shortUrl] = {longURL, userId}; 
+    res.redirect(`/urls/${shortUrl}`);
+    } else {
+        res.direct('/login');
+    }
 }); 
     
 //This updates a longURL; allows user to edit longURL
