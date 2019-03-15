@@ -49,11 +49,10 @@ createUser = (email, password) => {
     return userId;
 };
 //Handles registration error conditions
-emailCheck = (email) => {
+emailCheck = email => {
     for (let user in userDatabase)
-    if (userDatabase[email] === email) {
-        return false;
-    }
+    if (userDatabase[user]['email'] === email) {
+        return true};
 };
 
 
@@ -76,25 +75,31 @@ emailCheck = (email) => {
 
 //get handlers 
 app.get('/urls', (req, res) => {
+    const userId = req.cookies['user_id'];
     let templateVars = { 
-        urls: urlDatabase, 
-        username: req.cookies['username']};
+        user: userDatabase[userId],
+        urls: urlDatabase
+    };
     res.render('urls_index', templateVars);
 });
 
 //This renders the new page
 app.get('/urls/new', (req, res) => {
+    const userId = req.cookies['user_id'];
     let templateVars = {
-        username: req.cookies['username']}
+        user: userDatabase[userId]
+    };
     res.render('urls_new', templateVars);
 });
 
 //This renders the show page
 app.get('/urls/:shortURL/', (req, res) => {
+    const userId = req.cookies['user_id'];
     let templateVars = { 
+        user: userDatabase[userId],
         shortURL: req.params.shortURL, 
         longURL: urlDatabase[req.params.shortURL], 
-        username: req.cookies['username']};
+    };
     res.render('urls_show', templateVars);
 });
 
@@ -106,23 +111,28 @@ app.get('/u/:shortURL', (req, res) => {
 
 //This displays the registration form; registration.ejs
 app.get('/register', (req, res) => {
-    res.render('registration', { username: null });
+    const userId = req.cookies['user_id'];
+    let templateVars = {
+        user: userDatabase[userId]
+    };
+    res.render('registration', templateVars);
 });
 
 //This creates new users in user database and sets cookies
 app.post('/register', (req, res) => {
     const {email, password } = req.body;
-    const userId = createUser(email, password);
     
-   if(email === '' || password === '') {
-    res.status(400).send("Please enter valid information")
-   } else if (emailCheck) {
-    res.status(400).send("Email already exists. Try logging in!")
-   } else{
+    if(email === '' || password === '') {
+        res.status(400).send("Please enter valid information")
+    } else if (emailCheck(email)) {
+        res.status(400).send("Email already exists. Try logging in!")
+    } else{
+        const userId = createUser(email, password);
     res.cookie('user_id', userId);
     // req.session.user_id = userId;
+    }
     res.redirect('/urls');
-}});
+});
 
 
 
