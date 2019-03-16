@@ -25,11 +25,6 @@ const urlDatabase = {
     '9sm5xK': {longURL: 'http://www.google.com', userId: 'g7vaj3l0'} 
 };
 
-// const urlDatabase = {
-//     b6UTxQ: { longURL: "https://www.tsn.ca", userID: "aJ48lW" },
-//     i3BoGr: { longURL: "https://www.google.ca", userID: "aJ48lW" }
-//   };
-
 //user database
 const userDatabase = {
     "userRandomID": {
@@ -65,7 +60,14 @@ const findUserByEmail = email => {
 };
 
 //
-const urlsForUser = id => {};
+const urlsForUser = id => {
+    for (let user in userDatabase) {
+        if (id === user[id]) {
+            return user;
+        }
+    }
+    return false;
+};
 
 //This renders index page
 app.get('/urls', (req, res) => {
@@ -74,7 +76,14 @@ app.get('/urls', (req, res) => {
         user: userDatabase[userId],
         urls: urlDatabase
     };
-    res.render('urls_index', templateVars);
+    let user = urlsForUser(userId);
+    if (!userId) {
+        res.status(400).send('Please login or register first!');
+    } else {
+        if (user) {
+            res.render('urls_index', templateVars);
+        }
+    }
 });
 
 //This renders the new page
