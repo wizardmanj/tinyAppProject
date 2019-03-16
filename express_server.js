@@ -60,13 +60,14 @@ const findUserByEmail = email => {
 };
 
 //
-const urlsForUser = id => {
-    for (let user in userDatabase) {
-        if (id === user[id]) {
-            return user;
-        }
+const urlsForUser = userId => {
+    let filteredURLS = {};
+    for (let shortURL in userDatabase) {
+        if (userId === userDatabase[shortURL].userId) {
+            filteredURLS.shortURL;
+        };
     }
-    return false;
+    return filteredURLS;
 };
 
 //This renders index page
@@ -76,11 +77,11 @@ app.get('/urls', (req, res) => {
         user: userDatabase[userId],
         urls: urlDatabase
     };
-    let user = urlsForUser(userId);
     if(!userId) {
         res.redirect('/login');
     } else {
-    res.render('urls_index', templateVars);
+        urlsForUser(userId);
+        res.render('urls_index', templateVars);
     }
 });
 
