@@ -67,7 +67,6 @@ const urlsForUser = userId => {
             filteredURLS[shortURL] = urlDatabase[shortURL];
         };
     };
-    console.log('haha: ',filteredURLS)
     return filteredURLS;
 };
 
@@ -181,19 +180,29 @@ app.post('/urls', (req, res) => {
     }
 }); 
     
-//This updates a longURL; allows user to edit longURL
+//This updates/edits a longUR;
 app.post('/urls/:shortURL', (req, res) => {
-    var formContent = req.body.longURL;
-    var shortURL = req.params.shortURL;
-    urlDatabase[shortURL].longURL = formContent; 
-    res.redirect('/urls');
+    const userId = req.cookies.user_id;
+    let formContent = req.body.longURL;
+    let shortURL = req.params.shortURL;
+    if (userId && userId === urlDatabase[shortURL].userId) {
+        urlDatabase[shortURL].longURL = formContent; 
+        res.redirect('/urls');
+    } else {
+        res.status(403).send("Nice try! You're not allowed to do that, silly!");    
+    };
 }); 
 
 
 //This deletes a URL (short and long)
 app.post('/urls/:shortURL/delete', (req, res) => {
-    delete urlDatabase[req.params.shortURL];
-    res.redirect('/urls');
+    const userId = req.cookies.user_id;
+    if (userId && userId === urlDatabase[req.params.shortUrl].userId) {
+        delete urlDatabase[req.params.shortURL];
+        res.redirect('/urls');
+    } else {
+        res.status(403).send("Nice try! You're not allowed to do that, silly!");
+    };
 });
 
 //This logs out the user
