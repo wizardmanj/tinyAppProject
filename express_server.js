@@ -62,11 +62,12 @@ const findUserByEmail = email => {
 //
 const urlsForUser = userId => {
     let filteredURLS = {};
-    for (let shortURL in userDatabase) {
-        if (userId === userDatabase[shortURL].userId) {
-            filteredURLS.shortURL;
+    for (let shortURL in urlDatabase) {
+        if (userId === urlDatabase[shortURL].userId) {
+            filteredURLS[shortURL] = urlDatabase[shortURL];
         };
-    }
+    };
+    console.log('haha: ',filteredURLS)
     return filteredURLS;
 };
 
@@ -75,12 +76,12 @@ app.get('/urls', (req, res) => {
     const userId = req.cookies['user_id'];
     let templateVars = { 
         user: userDatabase[userId],
-        urls: urlDatabase
+        urls: urlsForUser(userId)
     };
     if(!userId) {
         res.redirect('/login');
     } else {
-        urlsForUser(userId);
+        console.log('urldb:', templateVars)
         res.render('urls_index', templateVars);
     }
 });
@@ -101,7 +102,7 @@ app.get('/urls/new', (req, res) => {
 });
 
 //This renders the show page
-app.get('/urls/:shortURL/', (req, res) => {
+app.get('/urls/:shortURL', (req, res) => {
     const userId = req.cookies['user_id'];
     let templateVars = { 
         user: userDatabase[userId],
@@ -173,8 +174,8 @@ app.post('/urls', (req, res) => {
     let longURL = req.body.longURL; 
     let shortUrl = generateRandomString();
     if (userId) { 
-    urlDatabase[shortUrl] = {longURL, userId}; 
-    res.redirect(`/urls/${shortUrl}`);
+        urlDatabase[shortUrl] = {longURL, userId}; 
+        res.redirect(`/urls/${shortUrl}`);
     } else {
         res.direct('/login');
     }
