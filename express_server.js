@@ -1,9 +1,9 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const bcrypt = require('bcrypt');
 const uuidv1 = require('uuid/v1');
 const cookieParser = require('cookie-parser');
 const cookieSession = require('cookie-session');
-
 const app = express();
 const PORT = process.env.port || 8080;
 //KILL PORT:
@@ -14,6 +14,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use(express.static(__dirname + '/public'));
 app.set('view engine', 'ejs');
 app.use(cookieParser())
+
 
 
 //used for: shortURL generator
@@ -30,12 +31,12 @@ const userDatabase = {
     "userRandomID": {
         id: "userRandomID", 
         email: "user@example.com", 
-        password: "purple-monkey-dinosaur"
+        password: bcrypt.hashSync('whatever', 10)
       },
      "user2RandomID": {
         id: "user2RandomID", 
         email: "user2@example.com", 
-        password: "dishwasher-funk"
+        password: bcrypt.hashSync('whateverelse', 10)
       }
 };
 //Creates a new user
@@ -44,11 +45,13 @@ const createUser = (email, password) => {
     const newUser = {
         id: userId,
         email,
-        password
+        password: bcrypt.hashSync(password, 10)
     };
+
     userDatabase[userId] = newUser;
     return userId;
 };
+
 //Handles registration error conditions
 const findUserByEmail = email => {
     for (let userId in userDatabase) {
@@ -80,7 +83,6 @@ app.get('/urls', (req, res) => {
     if(!userId) {
         res.redirect('/login');
     } else {
-        console.log('urldb:', templateVars)
         res.render('urls_index', templateVars);
     }
 });
@@ -102,7 +104,7 @@ app.get('/urls/new', (req, res) => {
 
 //This renders the show page
 app.get('/urls/:shortURL', (req, res) => {
-    const userId = req.cookies['user_id'];
+    const userId = req.cookies.user_id;
     let templateVars = { 
         user: userDatabase[userId],
         shortURL: req.params.shortURL, 
@@ -113,13 +115,13 @@ app.get('/urls/:shortURL', (req, res) => {
 
 //This redirects to the longURL
 app.get('/u/:shortURL', (req, res) => {
-    const longURL = urlDatabase[req.params.shortURL];
-    res.redirect(longURL);
+    const longURL = urlDatabase[req.params.shortURL].longURL;
+    res.redirect(`http://${longURL}`);
 });
 
 //This displays the registration form; registration.ejs
 app.get('/register', (req, res) => {
-    const userId = req.cookies['user_id'];
+    const userId = req.cookies.user_id;
     let templateVars = {
         user: userDatabase[userId]
     };
@@ -129,14 +131,14 @@ app.get('/register', (req, res) => {
 //This creates new users in user database and sets cookies
 app.post('/register', (req, res) => {
     const {email, password } = req.body;
-    
+
     if(email === '' || password === '') {
         res.status(400).send("Please enter valid information")
     } else if (findUserByEmail(email)) {
         res.status(400).send("Email already exists. Try logging in!")
     } else{
         const userId = createUser(email, password);
-    res.cookie('user_id', userId);
+        res.cookie('user_id', userId);
     // req.session.user_id = userId;
     }
     res.redirect('/urls');
