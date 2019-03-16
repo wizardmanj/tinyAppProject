@@ -22,8 +22,8 @@ const generateRandomString = () => Math.random().toString(36).substr(2,8);
 //url database
 const urlDatabase = {
     'b2xVn2': {longURL: 'http://www.lighthouselabs.ca', userId: 'g7vaj3l0'},
-    '9sm5xK': {longURL: 'http://www.google.com', userId: 'g7vaj3l0'} 
-};
+    '9sm5xK': {longURL: 'http://www.google.com', userId: 'g7vaj3l0'}
+    };
 
 //user database
 const userDatabase = {
@@ -77,12 +77,10 @@ app.get('/urls', (req, res) => {
         urls: urlDatabase
     };
     let user = urlsForUser(userId);
-    if (!userId) {
-        res.status(400).send('Please login or register first!');
+    if(!userId) {
+        res.redirect('/login');
     } else {
-        if (user) {
-            res.render('urls_index', templateVars);
-        }
+    res.render('urls_index', templateVars);
     }
 });
 
@@ -90,6 +88,8 @@ app.get('/urls', (req, res) => {
 app.get('/urls/new', (req, res) => {
     const userId = req.cookies['user_id'];
     let templateVars = {
+        shortURL: req.params.shortURL,
+        longURL: urlDatabase[req.params.shortURL],
         user: userDatabase[userId]
     };
     if (!userId) {
@@ -183,7 +183,7 @@ app.post('/urls', (req, res) => {
 app.post('/urls/:shortURL', (req, res) => {
     var formContent = req.body.longURL;
     var shortURL = req.params.shortURL;
-    urlDatabase[shortURL] = formContent; 
+    urlDatabase[shortURL].longURL = formContent; 
     res.redirect('/urls');
 }); 
 
