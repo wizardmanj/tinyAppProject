@@ -3,44 +3,6 @@ Started: March 13, 2019 -  STILL NOT FINISHED...$#!T!
 
 Steps***
 
-URLs Belong to Users
-In order to keep track of which URLs belong to particular users, we'll need to associate each new URL with the user that created it.
-
-Up to this point, our urlDatabase was an object with shortURL keys and longURL values. Now that we have more data to keep track of, lets change the structure of our uRLDatabase. We'll keep the shortURL as the key, but we'll change the value to an object that has longURL and userID keys itself. Here's an example:
-
-const urlDatabase = {
-  b6UTxQ: { longURL: "https://www.tsn.ca", userID: "aJ48lW" },
-  i3BoGr: { longURL: "https://www.google.ca", userID: "aJ48lW" }
-};
-Add a new userID (string) property to individual url objects within the urlDatabase collection. It should just contain the user ID (the key in the users collection) and not a copy of the entire user data. All URLs should now have this extra property.
-
-Users Can Only See Their Own Shortened URLs
-This means that the /urls page should not display URLs unless the user is logged in. It should instead display a message or prompt suggesting that they login or register first.
-
-This also means that the /urls page will need to filter the entire list in the urlDatabase by comparing the userID with the logged-in user's ID. This filtering process should happen before the data is sent to the template for rendering.
-
-Similarly, this also means that the /urls/:id page should display a message or prompt if the user is not logged in, or if the the URL with the matching :id does not belong to them.
-
-Create a function named urlsForUser(id) which returns the URLs where the userID is equal to the id of the currently logged in user.
-
-Users Can Only Edit or Delete Their Own URLs
-Even though we're now filtering the list of URLs that are shown to a user, our edit and delete routes still allow for a user to modify URLs. For example, if we had a url with an id of sgq3y6, and we entered the following command into our terminal, the url would be deleted!
-
-curl -X POST -i localhost:8080/urls/sgq3y6/delete
-As this test shows, removing the "Edit" and "Delete" buttons from our front end does not prevent someone from accessing our POST /urls/:id or POST /urls/:id/delete routes.
-
-Update the edit and delete endpoints such that only the owner (creator) of the URL can edit or delete the link. Use a testing utility like cURL to confirm that if a user is not logged in, they cannot edit or delete urls.
-
-Anyone Can Visit Short URLs
-Since these short URLs are meant to be shared with anyone, make sure that anyone can still visit the short URLs and get properly redirected, whether they are logged in or not.
-
-Test your GET /u/:id routes to make sure they redirect for users, even if they aren't logged in.
-
-Conclusion
-In this exercise we implemented features that tailor the experience for each user of our TinyApp.
-
-We learned how to associate urls with users by adding a userID attribute to our data. We then used this new attribute to filter our data and show the user only relevant information to them. We also learned the importance of securing our API against unauthorized access. Finally we learned the importance of testing our application as we add new functionality to it.
-
 ****************************************************************************************************************
 
 NEXT STEP

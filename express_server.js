@@ -140,7 +140,7 @@ app.post('/register', (req, res) => {
     } else if (findUserByEmail(email)) {
         res.status(400).send("Email already exists. Try logging in!")
     } else{
-        const userId = createUser(email, password);
+        const userId = createUser(email,password);
         req.session.user_id = userId;
     }
     res.redirect('/urls');
@@ -159,11 +159,12 @@ app.get('/login', (req, res) => {
 app.post('/login', (req, res) => {
     const {email, password } = req.body;
     const user = findUserByEmail(email);
+    let hashword = bcrypt.hashSync(password, 10);
     if(!email || !password) {
         res.status(400).send("Please enter valid information")
     } else if (!user) {
         res.status(403).send('User not found!');
-    } else if (user.password === password) {
+    } else if (bcrypt.compareSync(password, hashword))     {
         req.session.user_id = user;
         res.redirect('/urls');      
     } else {
@@ -184,7 +185,7 @@ app.post('/urls', (req, res) => {
     }
 }); 
     
-//This updates/edits a longUR;
+//This updates/edits a longURL;
 app.post('/urls/:shortURL', (req, res) => {
     const userId = req.session.user_id;
     let formContent = req.body.longURL;
@@ -200,7 +201,7 @@ app.post('/urls/:shortURL', (req, res) => {
 
 //This deletes a URL (short and long)
 app.post('/urls/:shortURL/delete', (req, res) => {
-    const userId = req.session.user_id;
+    let userId = req.session.user_id;
     if (userId && userId === urlDatabase[req.params.shortUrl].userId) {
         delete urlDatabase[req.params.shortURL];
         res.redirect('/urls');
