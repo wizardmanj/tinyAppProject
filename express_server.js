@@ -15,10 +15,10 @@ app.use(express.static(__dirname + '/public'));
 app.set('view engine', 'ejs');
 // app.use(cookieParser())
 app.use(cookieSession({
-        name: 'session',
-        keys: ['ab222be5-0215-45a0-8c01-41d141d1185b']
-    })
-)
+    name: 'session',
+    secret: 'anystring',
+    maxAge: 24 * 60 * 60 * 1000 
+  }))
 
 
 //used for: shortURL generator
@@ -112,7 +112,7 @@ app.get('/urls/:shortURL', (req, res) => {
     let templateVars = { 
         user: userDatabase[userId],
         shortURL: req.params.shortURL, 
-        longURL: urlDatabase[req.params.shortURL], 
+        longURL: urlDatabase[req.params.shortURL] 
     };
     res.render('urls_show', templateVars);
 });
