@@ -11,14 +11,15 @@
 </head>
 <body style='font-size:20px; padding:50px;'>
 
-<a href='/register'>Register</a> |
-<a href = '/login'>Login</a>
-
-<% if (user) {%>
- <h1>Welcome user: <%= user.email %></h1>
-      <form method='POST' action= '/logout'> 
-                <div class='form-group mb-2'>
-                    <button type='submit' class = 'btn btn-primary'>Logout</button>
-                </div>
-       </form> 
-<%} %>
+    
+    <% if (user) {%>
+        <h1>Welcome user: <%= user.email %></h1>
+        <form method='POST' action= '/logout'> 
+            <div class='form-group mb-2'>
+                <button type='submit' class = 'btn btn-primary'>Logout</button>
+            </div>
+        </form> 
+        <%} else {%>
+            <a href='/register'>Register</a> |
+            <a href = '/login'>Login</a>
+        <%} %>

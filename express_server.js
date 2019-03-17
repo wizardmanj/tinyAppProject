@@ -18,7 +18,7 @@ app.use(cookieSession({
     name: 'session',
     secret: 'anystring',
     maxAge: 24 * 60 * 60 * 1000 
-  }))
+  }));
 
 
 //used for: shortURL generator
@@ -38,8 +38,8 @@ const userDatabase = {
         password: bcrypt.hashSync('whatever', 10)
       },
      "user2RandomID": {
-        id: "user2RandomID", 
-        email: "user2@example.com", 
+        id: "user2RandomID",
+        email: "user2@example.com",
         password: bcrypt.hashSync('whateverelse', 10)
       }
 };
@@ -56,7 +56,7 @@ const createUser = (email, password) => {
     return userId;
 };
 
-//Handles registration error conditions
+//Helper functions
 const findUserByEmail = email => {
     for (let userId in userDatabase) {
         if (userDatabase[userId].email === email) {
@@ -66,7 +66,7 @@ const findUserByEmail = email => {
     return false;
 };
 
-//
+//Creates an object of user specific urls
 const urlsForUser = userId => {
     let filteredURLS = {};
     for (let shortURL in urlDatabase) {
@@ -165,10 +165,10 @@ app.post('/login', (req, res) => {
     } else if (!user) {
         res.status(403).send('User not found!');
     } else if (bcrypt.compareSync(password, hashword))     {
-        req.session.user_id = user;
+        req.session.user_id = user.id;
         res.redirect('/urls');      
     } else {
-        res.status(403).send("Gimme the right password.")
+        res.status(403).send("Woops! Try giving me the right password.")
     }
 });
 
@@ -199,10 +199,10 @@ app.post('/urls/:shortURL', (req, res) => {
 }); 
 
 
-//This deletes a URL (short and long)
+//This deletes a URL
 app.post('/urls/:shortURL/delete', (req, res) => {
     let userId = req.session.user_id;
-    if (userId && userId === urlDatabase[req.params.shortUrl].userId) {
+    if (userId && userId === urlDatabase[req.params.shortURL].userId) {
         delete urlDatabase[req.params.shortURL];
         res.redirect('/urls');
     } else {
