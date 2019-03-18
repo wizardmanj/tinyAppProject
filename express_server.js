@@ -94,33 +94,36 @@ app.get('/urls', (req, res) => {
 //This renders the new page
 app.get('/urls/new', (req, res) => {
     const userId = req.session.user_id;
-    let templateVars = {
-        shortURL: req.params.shortURL,
-        longURL: urlDatabase[req.params.shortURL],
-        user: userDatabase[userId]
-    };
     if (!userId) {
         res.redirect('/login');
     } else {
-    res.render('urls_new', templateVars);
+    res.render('urls_new');
     };
 });
 
 //This renders the show page
-app.get('/urls/:shortURL', (req, res) => {
+app.get('/urls/:shortURL/', (req, res) => {
     const userId = req.session.user_id;
+    let urlData = urlDatabase[req.params.shortURL];
+    const longURL = urlData ? urlData.longURL : null;
     let templateVars = { 
         user: userDatabase[userId],
         shortURL: req.params.shortURL, 
-        longURL: urlDatabase[req.params.shortURL] 
+        longURL, 
     };
     res.render('urls_show', templateVars);
 });
 
 //This redirects to the longURL
 app.get('/u/:shortURL', (req, res) => {
-    const longURL = urlDatabase[req.params.shortURL].longURL;
-    res.redirect(`http://${longURL}`);
+    const userId = req.session.user_id;
+    let shortURL = req.params.shortURL;
+    if (userId && urlDatabase && urlDatabase[shortURL] && userId === urlDatabase[shortURL].userId) {
+        const longURL = urlDatabase[req.params.shortURL].longURL;
+        res.redirect(`http://${longURL}`);
+    } else {
+        res.status(403).send("Nice try! You're not allowed to do that, silly!");    
+    };
 });
 
 //This displays the registration form; registration.ejs
@@ -181,7 +184,7 @@ app.post('/urls', (req, res) => {
         urlDatabase[shortUrl] = {longURL, userId}; 
         res.redirect(`/urls/${shortUrl}`);
     } else {
-        res.direct('/login');
+        res.status(400).send('No way JOSE!')
     }
 }); 
     
@@ -190,7 +193,7 @@ app.post('/urls/:shortURL', (req, res) => {
     const userId = req.session.user_id;
     let formContent = req.body.longURL;
     let shortURL = req.params.shortURL;
-    if (userId && userId === urlDatabase[shortURL].userId) {
+    if (userId && urlDatabase && urlDatabase[shortURL] && userId === urlDatabase[shortURL].userId) {
         urlDatabase[shortURL].longURL = formContent; 
         res.redirect('/urls');
     } else {
@@ -202,7 +205,7 @@ app.post('/urls/:shortURL', (req, res) => {
 //This deletes a URL
 app.post('/urls/:shortURL/delete', (req, res) => {
     let userId = req.session.user_id;
-    if (userId && userId === urlDatabase[req.params.shortURL].userId) {
+    if (userId && urlDatabase && urlDatabase[shortURL] && userId === urlDatabase[req.params.shortURL].userId) {
         delete urlDatabase[req.params.shortURL];
         res.redirect('/urls');
     } else {
