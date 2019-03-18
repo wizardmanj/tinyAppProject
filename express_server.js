@@ -6,7 +6,7 @@ const uuidv1 = require('uuid/v1');
 const cookieSession = require('cookie-session');
 const app = express();
 const PORT = process.env.port || 8080;
-//KILL PORT:
+//IF YOU NEED TO KILL AND RESET PORT:
 // netstat -ntlp | grep :8080 (<== portnumber)
 // then kill (pid #; provided from above)
 
