@@ -94,10 +94,13 @@ app.get('/urls', (req, res) => {
 //This renders the new page
 app.get('/urls/new', (req, res) => {
     const userId = req.session.user_id;
+    let templateVars = {
+        user:  userDatabase[userId]
+    }
     if (!userId) {
         res.redirect('/login');
     } else {
-    res.render('urls_new');
+    res.render('urls_new', templateVars);
     };
 });
 
