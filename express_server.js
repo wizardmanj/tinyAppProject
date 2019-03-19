@@ -1,7 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const bcrypt = require('bcrypt');
-const uuidv1 = require('uuid/v1');
 // const cookieParser = require('cookie-parser');
 const cookieSession = require('cookie-session');
 const app = express();
@@ -77,6 +76,11 @@ const urlsForUser = userId => {
     return filteredURLS;
 };
 
+
+app.get('/', (req, res) => {
+    res.redirect('/urls');
+})
+
 //This renders index page
 app.get('/urls', (req, res) => {
     const userId = req.session.user_id;
@@ -117,17 +121,26 @@ app.get('/urls/:shortURL/', (req, res) => {
     res.render('urls_show', templateVars);
 });
 
-//This redirects to the longURL
+//This redirects to the longURL 
 app.get('/u/:shortURL', (req, res) => {
-    const userId = req.session.user_id;
-    let shortURL = req.params.shortURL;
-    if (userId && urlDatabase && urlDatabase[shortURL] && userId === urlDatabase[shortURL].userId) {
-        const longURL = urlDatabase[req.params.shortURL].longURL;
-        res.redirect(`http://${longURL}`);
-    } else {
-        res.status(403).send("Nice try! You're not allowed to do that, silly!");    
-    };
-});
+    const shortURL = req.params.shortURL;
+    const urlObj = urlDatabase[shortURL];
+    res.redirect(urlObj.longURL);
+})
+
+
+
+// //This redirects to the longURL
+// app.get('/u/:shortURL', (req, res) => {
+//     const userId = req.session.user_id;
+//     let shortURL = req.params.shortURL;
+//     if (userId && urlDatabase && urlDatabase[shortURL] && userId === urlDatabase[shortURL].userId) {
+//         const longURL = urlDatabase[req.params.shortURL].longURL;
+//         res.redirect(`http://${longURL}`);
+//     } else {
+//         res.status(403).send("Nice try! You're not allowed to do that, silly!");    
+//     };
+// });
 
 //This displays the registration form; registration.ejs
 app.get('/register', (req, res) => {
@@ -207,9 +220,10 @@ app.post('/urls/:shortURL', (req, res) => {
 
 //This deletes a URL
 app.post('/urls/:shortURL/delete', (req, res) => {
+    const shortURL = req.params.shortURL;
     let userId = req.session.user_id;
-    if (userId && urlDatabase && urlDatabase[shortURL] && userId === urlDatabase[req.params.shortURL].userId) {
-        delete urlDatabase[req.params.shortURL];
+    if (userId && urlDatabase && urlDatabase[shortURL] && userId === urlDatabase[shortURL].userId) {
+        delete urlDatabase[shortURL];
         res.redirect('/urls');
     } else {
         res.status(403).send("Nice try! You're not allowed to do that, silly!");
